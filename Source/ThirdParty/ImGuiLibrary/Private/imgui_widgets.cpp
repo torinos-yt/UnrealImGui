@@ -5724,6 +5724,20 @@ bool ImGui::ListBox(const char* label, int* current_item, const char* const item
     return value_changed;
 }
 
+// Combo box helper allowing to pass all items in a single string literal holding multiple zero-terminated items "item1\0item2\0"
+bool ImGui::ListBox(const char* label, int* current_item, const char* items_separated_by_zeros, int height_in_items)
+{
+    int items_count = 0;
+    const char* p = items_separated_by_zeros;       // FIXME-OPT: Avoid computing this, or at least only when combo is open
+    while (*p)
+    {
+        p += strlen(p) + 1;
+        items_count++;
+    }
+    bool value_changed = ListBox(label, current_item, Items_SingleStringGetter, (void*)items_separated_by_zeros, items_count, height_in_items);
+    return value_changed;
+}
+
 bool ImGui::ListBox(const char* label, int* current_item, bool (*items_getter)(void*, int, const char**), void* data, int items_count, int height_in_items)
 {
     if (!ListBoxHeader(label, items_count, height_in_items))
